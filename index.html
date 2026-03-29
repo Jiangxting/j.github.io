@@ -2,76 +2,179 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>我的个人主页</title>
-    <!-- 本地图片图标 -->
-    <link rel="icon" href="pic1.jpg" type="image/jpeg">
+    <title>日常工具页</title>
+    <link rel="icon" href="favicon.jpg" type="image/jpeg">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: "Microsoft YaHei", sans-serif;
-            background: #f0f2f5;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: #f7f9fc;
             color: #333;
-            line-height: 1.6;
+            padding: 30px;
         }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 40px;
+
+        /* 右上角天气 */
+        .weather {
+            position: fixed;
+            top: 20px;
+            right: 30px;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            padding: 16px 22px;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            font-size: 15px;
+            line-height: 1.7;
         }
-        h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
+
+        .weather div {
+            margin: 4px 0;
+        }
+
+        /* 中间容器 */
+        .container {
+            max-width: 820px;
+            margin: 100px auto;
+        }
+
+        /* 导航按钮 */
+        .nav {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .nav a {
+            padding: 15px 26px;
+            background: #fff;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: #eef4ff;
+            transform: translateY(-2px);
+        }
+
+        /* 推理题卡片 */
+        .puzzle {
+            background: white;
+            padding: 36px;
+            border-radius: 16px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+        }
+
+        .puzzle h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
             color: #222;
         }
-        .title {
-            color: #666;
-            font-size: 18px;
-            margin-bottom: 30px;
+
+        .question {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 20px;
         }
-        .section {
-            margin-bottom: 25px;
-        }
-        h2 {
-            font-size: 20px;
-            margin-bottom: 10px;
-            color: #444;
-        }
-        a {
-            color: #0969da;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
+
+        .answer {
+            color: #555;
+            background: #f7f8fa;
+            padding: 14px;
+            border-radius: 8px;
+            line-height: 1.6;
         }
     </style>
 </head>
+
 <body>
+    <!-- 实时天气 -->
+    <div class="weather" id="weather">
+        加载天气中...
+    </div>
+
     <div class="container">
-        <h1>你好，我是 Jiangxtting</h1>
-        <div class="title">这是我的个人主页</div>
-
-        <div class="section">
-            <h2>关于我</h2>
-            <p>正在学习编程，喜欢做有趣的小项目。</p>
-            <p>这是我真正上线的网站！</p>
+        <!-- 快捷导航 -->
+        <div class="nav">
+            <a href="https://www.doubao.com" target="_blank">豆包</a>
+            <a href="https://www.huya.com" target="_blank">虎牙</a>
+            <a href="https://leetcode.cn" target="_blank">力扣</a>
         </div>
 
-        <div class="section">
-            <h2>我的项目</h2>
-            <p>• 个人主页（就是这个）</p>
-        </div>
-
-        <div class="section">
-            <h2>联系我</h2>
-            <p>GitHub：github.com/Jiangxting</p>
+        <!-- 每日逻辑题 -->
+        <div class="puzzle">
+            <h2>今日逻辑推理题</h2>
+            <div class="question" id="question"></div>
+            <div class="answer" id="answer"></div>
         </div>
     </div>
+
+    <script>
+        // ==============================================
+        // 1. 每日自动切换题库
+        // ==============================================
+        const puzzles = [
+            {
+                q: "🚪 三门问题（蒙提霍尔问题）<br>有三扇门，一扇后是汽车，两扇是山羊。你先选一扇，主持人打开另一扇有山羊的门，问：换门胜率更高还是不变？",
+                a: "答案：换门胜率 2/3，不换仅 1/3。"
+            },
+            {
+                q: "🔢 一个人花 8 元买了一只鸡，9 元卖掉，10 元买回，11 元再卖掉。问他最终赚了多少？",
+                a: "答案：净赚 2 元。"
+            },
+            {
+                q: "🕰️ 钟表上，3 点 15 分时，时针与分针夹角是多少度？",
+                a: "答案：7.5 度。时针会走 15 分钟的偏移量。"
+            },
+            {
+                q: "🌱 有一种浮萍，每天面积扩大一倍，30 天能铺满整个池塘。请问第几天铺满半个池塘？",
+                a: "答案：第 29 天。"
+            },
+            {
+                q: "🧱 10 根绳子打结连成一根，需要打多少个结？",
+                a: "答案：9 个。"
+            },
+            {
+                q: "🐺 一只狼、一只羊、一颗白菜要过河，船一次只能带一样。狼吃羊，羊吃菜，如何安全过河？",
+                a: "1. 先带羊过去；2. 回来带狼，再把羊带回；3. 带菜过去；4. 最后带羊。"
+            }
+        ];
+
+        // 按日期自动换题
+        const today = new Date().getDate();
+        const index = today % puzzles.length;
+        document.getElementById("question").innerHTML = puzzles[index].q;
+        document.getElementById("answer").innerHTML = puzzles[index].a;
+
+        // ==============================================
+        // 2. 实时天气（调用公开接口）
+        // ==============================================
+        async function loadWeather() {
+            const cities = ["江阴", "无锡", "南京", "秦皇岛"];
+            let html = "";
+            for (let city of cities) {
+                try {
+                    let res = await fetch(`https://api.asilu.com/weather/?city=${encodeURIComponent(city)}`);
+                    let data = await res.json();
+                    let w = data.weather[0];
+                    html += `<div>${city}：${w.temp}℃ ${w.weather}</div>`;
+                } catch (e) {
+                    html += `<div>${city}：加载失败</div>`;
+                }
+            }
+            document.getElementById("weather").innerHTML = html;
+        }
+
+        loadWeather();
+    </script>
 </body>
 </html>
